@@ -1,5 +1,135 @@
-/*jslint browser: true, indent: 4 */
-/*global console: true */
+/*jslint white: true, onevar: true, undef: true, newcap: true, nomen: true, regexp: true, plusplus: true, bitwise: true, browser: true, devel: true */
+
+/*global Raphael: false, game: true */
+
+var Level = function (proto) {
+    var i, j,
+        grass_elts = [],
+        gem_elts = [],
+        plr_elts = [],
+        level = {
+            sta: {},
+            dyn: {}
+        };
+    
+    for (i = 0; i < proto.length; i += 1) {
+        for (j = 0; j < proto[i].length; j += 1) {
+            switch (proto[i].charAt(j)) {
+                // grass
+                case 'g':
+                    grass_elts.push({
+                        x: 50 * j,
+                        y: 50 * i,
+                        src: {def: ["res/img/tile.png"]}
+                    });
+                break;
+                // player
+                case 'p':
+                    plr_elts.push({
+                        x: 50 * j,
+                        y: 50 * i,
+                        src: {
+                            def: ["res/img/squirrel.png"],
+                            run: ["res/img/squirrel.png"]
+                        }
+                    });
+                break;
+                // gem (acorn)
+                case 'r':
+                    gem_elts.push({
+                        x: 50 * j,
+                        y: 50 * i,
+                        src: {def: ["res/img/acorn.png"]}
+                    });
+                break;
+                default:
+                break;
+            }
+        }
+    }
+    
+    level.dyn.players = new Group({
+        update: function () {
+            var speed = 1;
+
+            this.animate = false;
+        
+            this.dy = 0;
+            this.dx = 0;
+        
+            if (controller.getState(KEY.UP)) {
+                this.dy += -speed;
+                this.animate = "run";
+            }
+            if (controller.getState(KEY.DOWN)) {
+                this.dy += speed;
+                this.animate = "run";
+            }
+            if (controller.getState(KEY.RIGHT)) {
+                this.dx += speed;
+                this.animate = "run";
+            }
+            if (controller.getState(KEY.LEFT)) {
+                this.dx += -speed;
+                this.animate = "run";
+            }
+            
+            if (this.animate) {
+                this.frame += 1;
+                if (this.frame > this.src[this.animate].length) {
+                    this.frame = 0;
+                }
+            }
+            this.x += this.dx;
+            this.y += this.dy;
+            
+        }, // update
+        draw: function () {
+            this.node.attr("x", this.x);
+            this.node.attr("y", this.y);
+            if (this.animate) {
+                this.node.attr("src", this.src[this.animate][this.frame]);
+            }
+        }, // draw
+        init: function () {
+            this.node = game.canvas.image(this.src["def"][this.frame], this.x, this.y, this.width, this.height);
+            this.animate = false;
+            this.dx = 0;
+            this.dy = 0;
+        },
+        elts: plr_elts
+    });
+    
+    level.sta.grass = new Group({
+        update: function () {}, // update
+        draw: function () {}, // draw
+        init: function () {
+            this.node = game.canvas.image(this.src["def"][this.frame], this.x, this.y, this.width, this.height);
+        },
+        remove: function () {
+            if (this.node) {
+                this.node.remove();
+            }
+        },
+        elts: grass_elts
+    });
+    
+    level.sta.gems = new Group({
+        update: function () {}, // update
+        draw: function () {}, // draw
+        init: function () {
+            this.node = game.canvas.image(this.src["def"][this.frame], this.x, this.y, this.width, this.height);
+        },
+        remove: function () {
+            if (this.node) {
+                this.node.remove();
+            }
+        },
+        elts: gem_elts
+    });
+    
+    return level;
+};
 
 // Interface for various states within a game.
 var State = function () {
@@ -14,135 +144,57 @@ var State = function () {
     
 };
 
-Menu = (function () {
+var Menu = (function () {
 
 }());
-
-var ProtoEntity = {
-
-};
-
-// Representing visible game item
-var Entity = function () {
-    var entity = {
-        x: 0,
-        y: 0,
-        width: 50,
-        height: 50,
-        v: 0,
-        src: "res/img/ruby.png"
-    };
-    
-    entity.remove = function () {
-    
-    };
-    
-    return entity;
-};
-
-// Object representing a group of entities
-// Provides enumeration over contained Entities
-var Group = function (proto) {
-    
-    // Private
-    var group = {},
-        drawFn = proto.draw || null,
-        updateFn = proto.update || null,
-        elts = proto.elts || [],
-        initFn = proto.init || null,
-        remFn = proto.remove || null;
-    
-    // Provide public access to elts
-    group.elts = elts;
-    
-    // public methods
-    group.add = function (o) {
-        elts.push(o);
-    };
-    
-    group.setUpdate = function (fn) {
-        updateFn = fn;
-    };
-    
-    group.update = function () {
-        for (var i = 0; i < elts.length; i += 1) {
-            updateFn.apply(elts[i]);
-        }
-    };
-    
-    group.draw = function () {
-        for (var i = 0; i < elts.length; i += 1) {
-            drawFn.apply(elts[i]);
-        }
-    };
-    
-    group.init = function () {
-        for (var i = 0; i < elts.length; i += 1) {
-            initFn.apply(elts[i]);
-        }
-    };
-    
-    group.remove = function () {
-        for (var i = 0; i < elts.length; i += 1) {
-            remFn.apply(elts[i]);
-        }
-        delete elts[i];
-    };
-    
-    return group;
-};
-
-// Constructor
-var Interaction = function (g1, g2, func) {
-
-    var inter = {},
-        group1 = g1.elts,
-        group2 = g2.elts,
-        fn = func;
-    
-    // Public
-    inter.update = function () {
-    
-        for (var i = 0; i < group1.length; i += 1) {
-            for (var j = 0; i < group2.length; i += 1) {
-                fn(group1[i], group2[j]);
-            }
-        }
-        
-    };
-    return inter;
-};
 
 // This object represents the gameloop for realtime games
 var Gameloop = function () {
 
     // Private
     var gl = {}, // gameloop; returned object
-        cont = true; // Continue: whether or not to continue to the next frame in the gameloop
+        cont = true, // Continue: whether or not to continue to the next frame in the gameloop
+        // Private member functions
+        init,
+        update,
+        draw,
+        loop,
+        loopTimeout,
+        pause;
+        
 
     gl.init = null;
     
-    gl.dyn = {},   // Entities that need to be updated/checked each frame
-    gl.sta = {}, // Entities that do not need to be updated/checked each frame
-    gl.inter = []; // holds interactions between objects 
-    
     // Private member functions
     ///////////////////////////////////////////////////////////////////////////
-    var init = function () {
+    init = function () {
     
-        if(gl.init) {
+        var i;
+    
+        gl.level = {
+            dyn: {}, // Entities that need to be updated/checked each frame
+            sta: {} // Entities that do not need to be updated/checked each frame
+        };
+        gl.inter = []; // holds interactions between objects
+    
+        if (gl.init) {
             gl.init();
         }
 
         // Draw initial state
-        for (var j in gl.dyn) {
-            if (typeof gl.dyn[j] !== 'function') {
-                gl.dyn[j].init();
+        for (i in gl.level.dyn) {
+            if (typeof gl.level.dyn[i] !== 'function') {
+                gl.level.dyn[i].init();
             }
         }
-        
-        controller.setMap(32, function() {
-            if(gl.isPaused()) {
+        for (i in gl.level.sta) {
+            if (typeof gl.level.sta[i] !== 'function') {
+                gl.level.sta[i].init();
+            }
+        }
+
+        controller.setMap(KEY.PAUSE, function () {
+            if (gl.isPaused()) {
                  gl.unpause();
             } else {
                 gl.pause();
@@ -151,13 +203,13 @@ var Gameloop = function () {
         
     };
     
-    var update = function () {
-        var i, j, elt;
+    update = function () {
+        var i, j;
         
         // update dynamic entity groups
-        for (j in gl.dyn) {
-            if (typeof gl.dyn[j] === 'object') {
-                gl.dyn[j].update();
+        for (j in gl.level.dyn) {
+            if (typeof gl.level.dyn[j] === 'object') {
+                gl.level.dyn[j].update();
             }
         }
         
@@ -167,28 +219,29 @@ var Gameloop = function () {
         }
     };
     
-    var draw = function () {
-        var i, j, elt;
+    draw = function () {
+        var i;
     
         // update dynamic entities
-        for (j in gl.dyn) {
-            if (typeof gl.dyn[j] === 'object') {
-                gl.dyn[j].draw();
+        for (i in gl.level.dyn) {
+            if (typeof gl.level.dyn[i] === 'object') {
+                gl.level.dyn[i].draw();
             }
         }
     };
     
-    var loop = function () {
+    loop = function () {
     
+        // call each dynamic object's update function
+        // perform interaction functions on each object pair
         update();
+        
+        // re-draw each object (update the Raphael nodes)
         draw();
-    
-        if(cont) {
-            setTimeout(loop, 1);
-        }
+        
     };
     
-    var pause = function () {
+    pause = function () {
         // Show pause screen. A sub-state within gameloop
     };
     
@@ -200,23 +253,32 @@ var Gameloop = function () {
     };
     
     gl.end = function () {
+        
+        // clear the timeout function
+        clearInterval(loopTimeout);
         cont = false;
+        
+        game.canvas.clear();
+        
+        
+        controller.resetMap();
     };
     
     gl.pause = function () {
-        if(gl.pauseHandle) {
+        if (gl.pauseHandle) {
             gl.pauseHandle();
         }
         cont = false;
+        clearInterval(loopTimeout);
         pause();
     };
     
     gl.unpause = function () {
-        if(gl.unpauseHandle) {
+        if (gl.unpauseHandle) {
             gl.unpauseHandle();
         }
         cont = true;
-        loop();
+        loopTimeout = setInterval(loop, 1);
     };
     
     gl.isPaused = function () {
@@ -224,23 +286,27 @@ var Gameloop = function () {
     };
     
     return gl;
-    
 };
 
 // Root-level object for the game
 var game = (function () {
     var game = {},
-        initial="loop",
+        initial = "loop",
         active;
             
     // Raphael-based container
     // holder is part of the html
-    game.canvas = Raphael("holder", 1000, 800);
+    game.canvas = new Raphael("holder", 1000, 600);
 
     // Added in game definition
     game.states = {};
+    
+    game.level = 0;
+    game.score = 0;
         
     game.bgm = null;
+    
+    game.levels = [];
         
     // Public
     game.start = function () {
@@ -249,75 +315,16 @@ var game = (function () {
     };
     
     game.switchState = function (state) {
-        if(game.states[state]) {
+        if (game.states[state]) {
             game.states[active].end();
             active = state;
             game.states[active].start();
         } else {
-            console.log("Attempted to enter nonexistent state '"+state+"'");
+            console.log("Attempted to enter nonexistent state '" + state + "'");
         }
     };
     
     
     return game;
     
-}());
-
-
-/*
- * Keycodes
- *
- * w          119
- * a          97
- * d          100
- * s          115
- *
- * q          113
- * e          101
- * r          114
- * Space      32
- */
-
-// This object contains the bindings for keypress events.
-var controller = (function () {
-
-    // Private members
-    var codes = {}, cont = {};
-
-    document.onkeypress = function (e) {
-        var c = e.charCode;
-        if(codes[c]) {
-            codes[c]();
-        }
-        //Debug:
-        //console.log("Keypress: " + c);
-    };
-    
-    // Public member functions
-    cont.setMap = function (key, fn) {
-        codes[key] = fn;
-    };
-    
-    cont.removeMap = function (key) {
-        if(codes[key])
-        {
-            delete codes[key];
-            console.log("Removed map to "+key);
-            return true;
-        } else {
-            console.log("Attempted to remove nonexistent map to "+key);
-            return false;
-        }
-    };
-    
-    cont.resetMap = function () {
-        for (key in codes) {
-            //TODO: filter these better, maybe wrap functions in an object
-            if(key !== "superior") {
-                cont.removeMap(key);
-            }
-        }
-    };
-    
-    return cont;
 }());
