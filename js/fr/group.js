@@ -8,7 +8,7 @@ var Group = function (proto) {
         drawFn = proto.draw || null,
         updateFn = proto.update || null,
         initFn = proto.init || null,
-        remFn = proto.remove || null;
+        remFn = proto.remove;
     
     // Provide public access to elts
     group.elts = [];
