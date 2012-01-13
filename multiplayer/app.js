@@ -59,25 +59,48 @@ var _ = require('underscore');
 
 io.sockets.on('connection', function (socket) {
 
-  socket.emit('listlobbies', _.pluck(server.lobbies, 'name'));
+  /*
+  socket.on('lobby:join', function (data) {
+    that.join(data.player);
+  });
+
+  socket.on('lobby:start:game', function (data) {
+    that.start();
+  });
+  */
+
+  socket.emit('lobby:list',
+    _.map(server.lobbies, function (lobby) {
+      return lobby.toSend();
+    }));
 
   var player = socket.player = new Player({
     socket: socket
   });
 
   // Create, Update, Destroy
-  socket.on('newlobby', function (data) {
-    var lobby = new Lobby({
-      name: data.name,
-      leader: player
-    });
-    server.lobbies.push(lobby);
+  socket.on('lobby:new', function (data) {
 
-    // notify other clients
-    socket.broadcast.emit('newlobby', data);
+    if (_.any(server.lobbies, function(lobby) {
+      return lobby.name === data.name;
+    })) {
+      socket.emit('error', 'A lobby with that name already exists');
+    } else {
+      var lobby = new Lobby({
+        name: data.name,
+        leader: player
+      });
+      player.lobby = lobby;
+      server.lobbies.push(lobby);
+
+      socket.emit('lobby:new:success');
+
+      // notify all clients
+      socket.broadcast.emit('lobby:new', lobby.toSend());
+    }
   });
 
-  socket.on('joinlobby', function (data) {});
-
-  socket.on('startgame', function (data) {});
+  socket.on('disconnect', function () {
+    player.destroy();
+  });
 });

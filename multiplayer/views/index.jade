@@ -5,6 +5,8 @@ p Welcome to #{title}
   | New Lobby Name:  
   input#lobbyname
   button#lobbysubmit Start a new Lobby
+#lobby.hidden
+  h2 You are in a lobby
 #play.hidden
   canvas#canvas(width="1000", height="600")
 script(src="/socket.io/socket.io.js")

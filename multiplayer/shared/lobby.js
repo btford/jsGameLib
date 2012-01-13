@@ -19,11 +19,15 @@ var Lobby = exports.Lobby = SocketGroup.extend({
 
   join: function (newPlayer) {
     if (!this.started) {
-      this.emit('newplayer', newPlayer.publicInfo());
+      this.emit('lobby:join', newPlayer.publicInfo());
       this.players.push(newPlayer);
-      newPlayer.emit('joinsuccess');
+
+      newPlayer.emit('lobby:join:success');
+      newPlayer.emit('lobby:players:list', {
+        
+      });
     } else {
-      newPlayer.emit('joinfail');
+      newPlayer.emit('lobby:join:fail');
     }
   },
 
@@ -40,5 +44,12 @@ var Lobby = exports.Lobby = SocketGroup.extend({
       players: this.players
     });
     game.start();
+  },
+
+  toSend: function () {
+    return {
+      name: this.name,
+      leader: this.leader.id
+    };
   }
 });
