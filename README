@@ -1,0 +1,11 @@
+This is a work in progress. At the moment, it's less of a "library" and more of a "collection of files and utils that you can hack to your needs." There are many other great JavaScript game libraries that would perhaps suit your needs.
+
+I just added some very raw code for multiplayer. The multiplayer directory contains a node.js express+socet.io app that acts as both the web and game server. To get it running, you need Node.js >= 0.6, and the packages listed in packages.json. You should use NPM to install that.
+
+# grab npm modules needed for multiplayer
+cd multiplayer
+npm install
+
+This project is also severely lacking documentation. I hope to change that someday...
+
+tl;dr: it may be wise to use something else.
