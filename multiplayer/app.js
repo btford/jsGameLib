@@ -50,7 +50,14 @@ var io = require('socket.io').listen(app);
 
 var server = {
   nextId: 0,
-  lobbies: []
+  lobbies: [],
+  emit: function (eventName, data) {
+    io.sockets.emit(eventName, data);
+  },
+  removeLobby: function (lobby) {
+    this.lobbies = _.without(this.lobbies, lobby);
+    this.emit('lobby:destroy', lobby.toSend());
+  }
 };
 
 var Lobby = require('./shared/lobby.js').Lobby;
@@ -60,10 +67,6 @@ var _ = require('underscore');
 io.sockets.on('connection', function (socket) {
 
   /*
-  socket.on('lobby:join', function (data) {
-    that.join(data.player);
-  });
-
   socket.on('lobby:start:game', function (data) {
     that.start();
   });
@@ -88,16 +91,27 @@ io.sockets.on('connection', function (socket) {
     } else {
       var lobby = new Lobby({
         name: data.name,
-        leader: player
+        leader: player,
+        server: server
       });
       player.lobby = lobby;
       server.lobbies.push(lobby);
 
-      socket.emit('lobby:new:success');
+      socket.emit('lobby:new:success', lobby.toSend());
 
       // notify all clients
       socket.broadcast.emit('lobby:new', lobby.toSend());
     }
+  });
+
+  socket.on('lobby:join', function (data) {
+    var lobby = _.find(server.lobbies, function (lobby) {
+      return lobby.id === data.id;
+    });
+    if (!lobby) {
+      console.warn('lobby not found');
+    }
+    lobby.join(player);
   });
 
   socket.on('disconnect', function () {

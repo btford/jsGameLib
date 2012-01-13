@@ -7,6 +7,8 @@ var Player = exports.Player = Model.extend({
     this.socket = args.socket;
     this.socket.player = this;
 
+    this.name = args.name || 'nameless player';
+
     // alias
     this.id = this.socket.id;
 
@@ -34,6 +36,17 @@ var Player = exports.Player = Model.extend({
       model.destroy();
     });
 
-    this.emit('destroy');
+    if (this.lobby) {
+      this.lobby.destroy();
+    }
+
+    this.emit('player:destroy');
+  },
+
+  toSend: function () {
+    return {
+      id: this.id,
+      name: this.name
+    };
   }
 });

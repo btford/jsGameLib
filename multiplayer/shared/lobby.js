@@ -13,6 +13,7 @@ var Lobby = exports.Lobby = SocketGroup.extend({
   initialize: function (args) {
     this.started = false;
     this.leader = args.leader;
+    this.id = args.leader.id;
     this.name = args.name;
     this.players = [args.leader];
   },
@@ -22,10 +23,7 @@ var Lobby = exports.Lobby = SocketGroup.extend({
       this.emit('lobby:join', newPlayer.publicInfo());
       this.players.push(newPlayer);
 
-      newPlayer.emit('lobby:join:success');
-      newPlayer.emit('lobby:players:list', {
-        
-      });
+      newPlayer.emit('lobby:join:success', this.toSend());
     } else {
       newPlayer.emit('lobby:join:fail');
     }
@@ -33,6 +31,7 @@ var Lobby = exports.Lobby = SocketGroup.extend({
 
   leave: function (player) {
     this.players = _.without(this.players, player);
+    this.emit('lobby:player:leave', player.toSend());
   },
 
   start: function () {
@@ -49,7 +48,15 @@ var Lobby = exports.Lobby = SocketGroup.extend({
   toSend: function () {
     return {
       name: this.name,
-      leader: this.leader.id
+      leader: this.leader.id,
+      players: _.map(this.players, function (player) {
+        return player.toSend();
+      })
     };
+  },
+
+  destroy: function() {
+    this.emit('lobby:destroy');
+    this.server.removeLobby(this);
   }
 });

@@ -1,12 +1,19 @@
-h1= title
-p Welcome to #{title}
+h1 jsGameLib Game
 #join
-  select(size="5")
-  | New Lobby Name:  
-  input#lobbyname
-  button#lobbysubmit Start a new Lobby
+  h2 Join a Game
+  p or start a new one
+  div
+    select(size="5")
+    button#lobbyjoin Join Lobby
+  div
+    | New Lobby Name:  
+    input#newlobbyname
+    button#lobbysubmit Start a new Lobby
 #lobby.hidden
-  h2 You are in a lobby
+  h2 You are in lobby: "
+    span#lobbyname
+    | "
+  ul#lobbyplayers
 #play.hidden
   canvas#canvas(width="1000", height="600")
 script(src="/socket.io/socket.io.js")
