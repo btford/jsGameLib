@@ -1,0 +1,14 @@
+h1= title
+p Welcome to #{title}
+#join
+  select(size="5")
+  | New Lobby Name:  
+  input#lobbyname
+  button#lobbysubmit Start a new Lobby
+#play.hidden
+  canvas#canvas(width="1000", height="600")
+script(src="/socket.io/socket.io.js")
+script(src="/js/lib/jquery-min.js")
+script(src="/js/lib/underscore-min.js")
+script(src="/js/lib/backbone-min.js")
+script(src="/js/main.js")
