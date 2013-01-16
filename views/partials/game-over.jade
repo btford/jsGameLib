@@ -1,0 +1,10 @@
+.container
+  //- game-over
+  div(ng-repeat='player in players')
+    div(ng-switch on='$index')
+      .winner(ng-switch-when="0")
+        h3 Winner: {{player.name}}
+        p Notoriety: {{player.notoriety}}
+      div(ng-switch-default)
+        h3 {{player.name}}
+        p Notoriety: {{player.notoriety}}

@@ -1,0 +1,18 @@
+{
+  "name": "jsGameLib",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "express": "3.0.0",
+    "jade": ">= 0.0.1",
+    "socket.io": ">= 0.9.6",
+    "glob-whatev": ">= 0.1.8",
+    "socketron": "~ 0.1.0"
+  },
+  "scripts": {
+    "start": "app.js"
+  },
+  "engines": {
+    "node": "0.8.x"
+  }
+}

@@ -1,0 +1,21 @@
+.container
+  .row
+    .span12
+      .well
+        h2 Lobby
+        h3 Players
+        ul.unstyled
+          li(ng-repeat='player in lobby.players') {{player}}
+        hr
+    //-
+      .span6
+        .well
+          h2 Chat
+          p chat over here, maybe?
+          form(ng-submit='sendMassage()')
+            input(ng-model='newChatMessage')
+            | 
+            button.btn(type='submit') Send
+  .row(ng-show='lobby.leader')
+    .span12
+      button.btn(ng-click='start()') Start

@@ -1,0 +1,64 @@
+{
+  "ship": {
+    "humanName": "Basic Ship",
+    "maxHealth": 100,
+    "fireDelay": 100,
+    "attack": 15,
+    "range": 10,
+    "speed": 1,
+    "accuracy": 0.8
+  },
+  
+  "fastShip": {
+    "humanName": "Caravel Lvl 1",
+    "maxHealth": 130,
+    "fireDelay": 80,
+    "attack": 15,
+    "range": 11,
+    "speed": 1.3,
+    "accuracy": 0.85,
+    "cost": 50
+  },
+  "fastShipFinal": {
+    "humanName": "Caravel Lvl 2",
+    "maxHealth": 150,
+    "fireDelay": 70,
+    "attack": 15,
+    "range": 12,
+    "speed": 1.5,
+    "accuracy": 0.90,
+    "cost": 75
+  },
+
+  "strongShip": {
+    "humanName": "Galleon Lvl 1",
+    "maxHealth": 150,
+    "fireDelay": 120,
+    "attack": 20,
+    "range": 13,
+    "speed": 0.9,
+    "accuracy": 0.7,
+    "cost": 50
+  },
+  "strongShipFinal": {
+    "humanName": "Galleon Lvl 2",
+    "maxHealth": 200,
+    "fireDelay": 130,
+    "attack": 30,
+    "range": 15,
+    "speed": 0.9,
+    "accuracy": 0.75,
+    "cost": 75
+  },
+
+  "ghostShip": {
+    "humanName": "Ghostly Ship",
+    "maxHealth": 115,
+    "fireDelay": 100,
+    "attack": 15,
+    "range": 10,
+    "speed": 1.2,
+    "accuracy": 0.75,
+    "cost": 30
+  }
+}

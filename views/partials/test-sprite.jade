@@ -1,0 +1,16 @@
+.container
+  .row
+    h1 Sprite Test Page
+  .row(ng-repeat='(name, sprite) in sprites')
+    h3 {{name}}
+    .span8
+      test-sprite(sprite='sprite', action='action', frame='frame')
+    .span4
+      label Action:
+      select(ng-model='action', ng-options='index as animation.name for (index, animation) in sprite.animations')
+
+      label Frame Count:
+      p {{sprite.animations[action].frames}}
+
+      label Miliseconds per Frame
+      input(ng-model='sprite.animations[action].duration')
