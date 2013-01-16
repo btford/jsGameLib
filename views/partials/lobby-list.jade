@@ -1,0 +1,14 @@
+.container
+  .row
+    .span12
+      .well
+        h2 Lobbies
+        ul.unstyled
+          li(ng-repeat='(id, lobby) in lobbies')
+            a(href ng-click='joinLobby(id)') {{lobby.name}} [{{lobby.players.length}}/4]
+        hr
+        fieldset
+          label New Lobby Name
+          input(ng-model='newLobbyName')
+          p  
+          button.btn(ng-click='newLobby()') Start a New Lobby

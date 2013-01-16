@@ -1,0 +1,10 @@
+.container
+  .row
+    .span12
+      .well
+        h2 Lobby {{lobby.name}}
+        h3 Players
+        ul.unstyled
+          li(ng-repeat='player in lobby.players') {{player}}
+        hr
+        button.btn.btn-success(ng-click='start()') Start

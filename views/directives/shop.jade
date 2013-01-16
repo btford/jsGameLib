@@ -1,0 +1,17 @@
+h1 Upgrade Shop
+
+table.table
+  tr
+    td(ng-repeat='upgrade in upgrades', style='float: left;')
+      h4 {{upgrade.humanName}}
+      p Health: {{upgrade.maxHealth}}
+      p Attack: {{upgrade.attack}}
+      p Speed: {{upgrade.speed}}
+      p Accuracy: {{upgrade.accuracy * 100}}%
+      p(ng-show='upgrade.name=="ghostShip"') Commandeers opposing ships when it attacks
+      button.btn(
+        ng-click='buy(upgrade.name)',
+        ng-disabled='disabled(upgrade)') Buy for {{upgrade.cost}} Notoriety
+hr
+p
+  button.btn(ng-click='active=false') Close

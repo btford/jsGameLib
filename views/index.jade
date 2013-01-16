@@ -1,0 +1,19 @@
+extends layout
+
+block body
+  .container(ng-controller='AppCtrl')
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container
+          a.brand(href='/') jsGameLib
+          ul.nav
+            li
+              a(href='/lobby-list') Lobbies
+          ul.nav.pull-right
+            li
+              button.btn(ng-click='toggleFullscreen()') <i class="icon-fullscreen"></i>
+
+  div(ng-view)
+
+  each file in jsFiles
+    script(src=file)

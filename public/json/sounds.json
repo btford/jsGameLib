@@ -1,0 +1,6 @@
+{
+  "explosion": "/sound/bomb",
+  "splash": "/sound/splash",
+  "swordclash": "/sound/swordclash",
+  "swordclash-flash": "/sound/swordclash-flash"
+}
