@@ -63,10 +63,10 @@ LobbyState.prototype.remove = function (socket) {
     this.numberOfPlayers = 0;
   }
 
-  SocketronState.prototype.remove.apply(this, arguments);
-  
+  if (!SocketronState.prototype.remove.apply(this, arguments)) {
+    return false;
+  }
   this._router.getSubstate('globalLobby').add(socket);
-
   this.broadcast('update:lobby', this.repr());
 
   return true;
@@ -79,7 +79,8 @@ LobbyState.prototype.repr = function () {
     players: [],
     leader: true
   };
-  for (socketName in this._sockets) {
+
+  for (var socketName in this._sockets) {
     if (this._sockets.hasOwnProperty(socketName)) {
       ret.players.push(socketName);
     }

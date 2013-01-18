@@ -76,16 +76,22 @@ GameState.prototype.start = function() {
   var last = Date.now();
   var play = function () {
     var now = Date.now();
-    var diff = game.calculate(now - last, privateState);
+    //var diff = game.calculate(now - last, privateState);
+    var diff = now - last;
+    thisGameState.broadcast('shared:update', diff);
+    /*
     if (diff) {
       thisGameState.broadcast('shared:update', diff);
-    }
+    }*/
     last = now;
+    /*
     if (game.timer > 0) {
       setTimeout(play, 15);
     } else {
       thisGameState.broadcast('change:route', '/game-over/' + thisGameState._name);
     }
+    */
+    setTimeout(play, 15);
   };
   play();
 

@@ -44,6 +44,7 @@ exports.init = function (io) {
           this.broadcast('update:lobbies', this.model.repr());
         }
         catch (e) {
+          console.error(e.message);
           this.broadcast('change:route', '/');
         }
       },

@@ -1,7 +1,7 @@
 /*global angular:false*/
 
 angular.module('gameApp').directive('shop',
-    function ($window, shared, $rootScope) {
+    function ($window, sharedModel, $rootScope) {
 
   return {
     templateUrl: '/directives/shop',
@@ -41,10 +41,10 @@ angular.module('gameApp').directive('shop',
 
       // determines which upgrades a player can do
       $scope.disabled = function (upgrade) {
-        var shipType = shared.getMe().ship.type;
+        var shipType = sharedModel.getMe().ship.type;
         // no upgrade.names after final
 
-        if (upgrade.cost > shared.getMe().notoriety) {
+        if (upgrade.cost > sharedModel.getMe().notoriety) {
           return true;
         }
         if (shipType.substr(-5) === 'Final') {

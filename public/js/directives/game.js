@@ -1,7 +1,7 @@
 /*global angular:false*/
 
 angular.module('gameApp').directive('game',
-    function ($window, renderGame, fullscreen, gameController, shared, socket, $http, MapRenderer) {
+    function ($window, renderGame, fullscreen, gameController, sharedModel, socket, $http, MapRenderer) {
 
   var canvasWidth = 1000,
     canvasHeight = 600;
@@ -44,7 +44,7 @@ angular.module('gameApp').directive('game',
 
       angular.element(canvas).bind('click', function (ev) {
 
-        var centerPlayer = shared.getMe();
+        var centerPlayer = sharedModel.getMe();
 
         // convert from isometric to orthogonal
         var vx = (canvas.width/2 - ev.layerX) / tileWidth,
@@ -53,16 +53,16 @@ angular.module('gameApp').directive('game',
         var x = -(vy + vx) + centerPlayer.ship.x,
           y = -(vy - vx) + centerPlayer.ship.y;
 
-        shared.get().players.forEach(function (player, index) {
-          if (player === shared.getMe()) {
+        sharedModel.get().players.forEach(function (player, index) {
+          if (player === sharedModel.getMe()) {
             return;
           } else if (dist(x, y, player.ship.x, player.ship.y) < 1) {
             socket.getRaw().emit('lockon:ship', index);
           }
         });
 
-        shared.get().towns.forEach(function (town, index) {
-          if (town === shared.getMe()) {
+        sharedModel.get().towns.forEach(function (town, index) {
+          if (town === sharedModel.getMe()) {
             return;
           } else if (dist(x, y, town.x, town.y) < 1) {
             socket.getRaw().emit('pillage:town', index);
@@ -77,8 +77,8 @@ angular.module('gameApp').directive('game',
         // TODO: move map canvas left and top
         var scrollX = 0,
           scrollY = 0;
-        if (shared.get().players) {
-          var centerPlayer = shared.getMe();
+        if (sharedModel.get().players) {
+          var centerPlayer = sharedModel.getMe();
           scrollX = tileWidth*(centerPlayer.ship.y - centerPlayer.ship.x)/2 - tileWidth/2 - mapCanvas.width/2 + canvas.width/2;
           scrollY = canvas.height/2 - tileHeight*(centerPlayer.ship.y + centerPlayer.ship.x)/2 - tileHeight/2;
           mapCanvas.style.left = Math.round(scrollX) + 'px';
