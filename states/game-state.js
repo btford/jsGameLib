@@ -6,6 +6,10 @@ var util = require('util');
 
 var SocketronState = require('socketron').State;
 
+var SharedModel = require('../models/shared-model.js');
+
+console.log(SharedModel);
+
 var GameState = module.exports = function (config) {
   SocketronState.apply(this, arguments);
 
@@ -13,8 +17,7 @@ var GameState = module.exports = function (config) {
   this.numberOfPlayers = 0;
 
   // TODO: name ? GameModel
-  this.model = {}; // new GameStateData();
-  //this.privateState = new PrivateState();
+  this.model = new SharedModel();
 
   this.on('controls', function (message, state, socket) {
     state.privateState.players[socket.id].controls = message;
