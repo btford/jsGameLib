@@ -7,7 +7,7 @@
     "jade": ">= 0.0.1",
     "socket.io": ">= 0.9.6",
     "glob-whatev": ">= 0.1.8",
-    "socketron": "~ 0.1.0"
+    "socketron": "~ 0.1.1"
   },
   "scripts": {
     "start": "app.js"
