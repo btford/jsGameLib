@@ -10,6 +10,9 @@ angular.module('gameApp').controller('AppCtrl',
    */
 
   var originalTarget = $location.url();
+  if (originalTarget === '/loading') {
+    originalTarget = '/';
+  }
   $location.url('/loading');
 
   dataLoader.preLoad().ready(function () {

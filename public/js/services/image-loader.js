@@ -22,9 +22,7 @@ angular.module('gameApp').factory('imageLoader', function (dataLoader, $rootScop
     },
 
     preLoad: function () {
-      var mapData = dataLoader.get('/json/map-v0.1.0.json').tilesets;
-      toLoad = mapData.length;
-      
+
       var spritesData = dataLoader.get('/json/sprites.json');
       angular.forEach(spritesData, function (sprite) {
         toLoad += 1;
@@ -40,9 +38,6 @@ angular.module('gameApp').factory('imageLoader', function (dataLoader, $rootScop
 
       angular.forEach(spritesData, function (sprite) {
         api.load(sprite.img, completeOne);
-      });
-      mapData.forEach(function (set) {
-        api.load(set.image, completeOne);
       });
       
       return api;

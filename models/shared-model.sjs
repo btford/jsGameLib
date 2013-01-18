@@ -15,15 +15,59 @@ macro change_helper {
 }
 
 macro this_ {
-  case ($x = $val) => {
-    $x = $val;
+  
+  // -= operator
+  case ($x -= $val:expr) => {
+    this.$x -= $val;
+    this._changed.$x = this.$x
   }
-  case ($head . $rest (.) ... = $val) => {
+  case ($head . $rest (.) ... -= $val:expr) => {
+    this.$head . $rest (.) ... -= $val;
     change_helper ($head) ($rest ...);
-    this._changed.$head . $rest (.) ... = $val;
-    this.$head . $rest (.) ... = $val
+    this._changed.$head . $rest (.) ... = this.$head . $rest (.) ...
+  }
+  
+  // += operator
+  case ($x += $val:expr) => {
+    this.$x += $val;
+    this._changed.$x = this.$x
+  }
+  case ($head . $rest (.) ... += $val:expr) => {
+    this.$head . $rest (.) ... += $val;
+    change_helper ($head) ($rest ...);
+    this._changed.$head . $rest (.) ... = this.$head . $rest (.) ...
+  }
+
+  // = operator
+  case ($x = $val:expr) => {
+    this.$x = $val;
+    this._changed.$x = this.$x
+  }
+  case ($head . $rest (.) ... = $val:expr) => {
+    this.$head . $rest (.) ... = $val;
+    change_helper ($head) ($rest ...);
+    this._changed.$head . $rest (.) ... = $val:expr
   }
 }
+
+/**
+ * # How it works
+ * Changes made inside of this_() will be added to this._changed, and
+ * ultimately sent to the client.
+ *
+ * Use myModel.getChanges to get the changes and reset the change list.
+ *
+ * The this_() macro currently only supports the following operators:
+ *    =
+ *    +=
+ *    -=
+ *
+ * ## Examples
+ * The following are valid:
+ *    this_(a.b.c.d = x + y)
+ *    this_(x = += dx)
+ *
+ */
 
 
 /**
@@ -31,12 +75,12 @@ macro this_ {
  */
 
 var SharedModel = module.exports = function () {
-  this.x = {y: {z: 1}};
+  this.timer = 0;
   this._changed = {};
 };
 
-SharedModel.prototype.test = function () {
-  this_(x.y.z = 20);
+SharedModel.prototype.calculate = function (delta) {
+  this_(timer += delta / 10);
 }
 
 SharedModel.prototype.getChanges = function () {

@@ -7,7 +7,6 @@ angular.module('gameApp').factory('sound', function ($http) {
   var sounds = {};
 
   // create a pool of sounds
-  /*
   $http.get('/json/sounds.json')
     .success(function (data) {
       angular.forEach(data, function (soundUrl, soundName) {
@@ -17,7 +16,6 @@ angular.module('gameApp').factory('sound', function ($http) {
         });
       });
     });
-  */
 
   return {
     play: function (soundName, volume) {

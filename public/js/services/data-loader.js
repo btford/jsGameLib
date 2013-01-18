@@ -4,9 +4,7 @@
 angular.module('gameApp').factory('dataLoader', function ($http) {
 
   var resources = [
-    '/json/sprites.json',
-    '/json/stats.json',
-    '/json/map-v0.1.0.json'
+    '/json/sprites.json'
   ];
   var toLoad = resources.length;
   var cache = {};

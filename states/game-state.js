@@ -70,7 +70,7 @@ GameState.prototype.repr = function () {
 
 GameState.prototype.start = function() {
 
-  var game = this.model;
+  var gameModel = this.model;
   var thisGameState = this;
 
   // last timestamp (in ms) since gamestate was updated
@@ -79,12 +79,13 @@ GameState.prototype.start = function() {
     var now = Date.now();
     //var diff = game.calculate(now - last, privateState);
     var diff = now - last;
-    thisGameState.broadcast('shared:update', diff);
-    /*
+    gameModel.calculate(diff);
     if (diff) {
-      thisGameState.broadcast('shared:update', diff);
-    }*/
+      thisGameState.broadcast('shared:update', gameModel.getChanges());
+    }
     last = now;
+
+    // TODO: end the game somehow
     /*
     if (game.timer > 0) {
       setTimeout(play, 15);
