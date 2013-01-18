@@ -1,7 +1,7 @@
 /*global angular:false*/
 
 angular.module('gameApp').directive('game',
-    function ($window, renderGame, fullscreen, gameController, sharedModel, socket, $http, MapRenderer) {
+    function ($window, renderGame, fullscreen, gameController, sharedModel) {
 
   var canvasWidth = 1000,
     canvasHeight = 600;
@@ -38,70 +38,24 @@ angular.module('gameApp').directive('game',
         }
       });
 
-      var dist = function (x1, y1, x2, y2) {
-        return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-      };
-
       angular.element(canvas).bind('click', function (ev) {
-
-        var centerPlayer = sharedModel.getMe();
-
-        // convert from isometric to orthogonal
-        var vx = (canvas.width/2 - ev.layerX) / tileWidth,
-          vy = (canvas.height/2 - ev.layerY) / tileHeight;
-
-        var x = -(vy + vx) + centerPlayer.ship.x,
-          y = -(vy - vx) + centerPlayer.ship.y;
-
-        sharedModel.get().players.forEach(function (player, index) {
-          if (player === sharedModel.getMe()) {
-            return;
-          } else if (dist(x, y, player.ship.x, player.ship.y) < 1) {
-            socket.getRaw().emit('lockon:ship', index);
-          }
-        });
-
-        sharedModel.get().towns.forEach(function (town, index) {
-          if (town === sharedModel.getMe()) {
-            return;
-          } else if (dist(x, y, town.x, town.y) < 1) {
-            socket.getRaw().emit('pillage:town', index);
-          }
-        });
-
+        // on click ...
       });
       
       var render = function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // TODO: move map canvas left and top
-        var scrollX = 0,
-          scrollY = 0;
-        if (sharedModel.get().players) {
-          var centerPlayer = sharedModel.getMe();
-          scrollX = tileWidth*(centerPlayer.ship.y - centerPlayer.ship.x)/2 - tileWidth/2 - mapCanvas.width/2 + canvas.width/2;
-          scrollY = canvas.height/2 - tileHeight*(centerPlayer.ship.y + centerPlayer.ship.x)/2 - tileHeight/2;
-          mapCanvas.style.left = Math.round(scrollX) + 'px';
-          mapCanvas.style.top = Math.round(scrollY) + 'px';
-        }
-
         renderGame(canvas, map);
-        
-        // send the data to the server without causing a digest.
-        // todo: only send if dirty
-        var controller = gameController.get();
+
+        // send keystrokes
+
         if (controller) {
           socket.getRaw().emit('controls', controller);
         }
+
         $window.requestAnimationFrame(render);
       };
 
-      $http.get('/json/map-v0.1.0.json')
-        .success(function (data) {
-          map = new MapRenderer(data);
-          map.render(mapCanvas);
-          $window.requestAnimationFrame(render);
-        });
+      // stop rendering when out of scope
 
       scope.$on('$destroy', function () {
         render = function () {};

@@ -1,3 +1,7 @@
+/**
+ * Isometric Map Renderer
+ */
+
 /*global angular:false*/
 'use strict';
 

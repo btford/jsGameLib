@@ -9,9 +9,7 @@ angular.module('gameApp').factory('sharedModel', function (socket) {
   // unwrapped socket; will not cause digest cycles in AngularJS
   var rawSocket = socket.getRaw();
 
-  var shared = {
-    effects: []
-  };
+  var shared = {};
 
   var set = function (obj, path, value) {
     if (!shared) {
@@ -37,10 +35,7 @@ angular.module('gameApp').factory('sharedModel', function (socket) {
 
   rawSocket.on('update:shared', function (message) {
     angular.forEach(message, function (pairs, path) {
-      if (pairs === 'effects') {
-        // TODO: better manage effects
-        shared.effects.append(path);
-      } else if (typeof pairs === 'object') {
+      if (typeof pairs === 'object') {
         angular.forEach(pairs, function (value, subPath) {
           set(shared, path + '.' + subPath, value);
         });
@@ -55,7 +50,13 @@ angular.module('gameApp').factory('sharedModel', function (socket) {
       return shared;
     },
     getMe: function () {
-      return shared.players[socket.getId()];
+      // TODO: remove for perf gains (?)
+      try {
+        return shared.players[socket.getId()];
+      }
+      catch (e) {
+        return {};
+      }
     }
   };
 });

@@ -8,8 +8,6 @@ var SocketronState = require('socketron').State;
 
 var SharedModel = require('../models/shared-model.js');
 
-console.log(SharedModel);
-
 var GameState = module.exports = function (config) {
   SocketronState.apply(this, arguments);
 
