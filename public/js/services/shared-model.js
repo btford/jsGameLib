@@ -4,13 +4,14 @@
 
 'use strict';
 
-angular.module('gameApp').factory('shared', function (socket) {
+angular.module('gameApp').factory('sharedModel', function (socket) {
 
-  socket = socket.getRaw();
+  // unwrapped socket; will not cause digest cycles in AngularJS
+  var rawSocket = socket.getRaw();
+
   var shared = {
-      effects: []
-    },
-    active = false;
+    effects: []
+  };
 
   var set = function (obj, path, value) {
     if (!shared) {
@@ -30,8 +31,11 @@ angular.module('gameApp').factory('shared', function (socket) {
     lastObj[property] = value;
   };
 
-  var onSharedUpdate = function (message) {
-    //console.log(message);
+  rawSocket.on('init:shared', function (message) {
+    shared = message;
+  });
+
+  rawSocket.on('update:shared', function (message) {
     angular.forEach(message, function (pairs, path) {
       if (pairs === 'effects') {
         // TODO: better manage effects
@@ -44,47 +48,14 @@ angular.module('gameApp').factory('shared', function (socket) {
         set(shared, path, pairs);
       }
     });
-  };
-
-  var onSharedInit = function (message) {
-    shared = message;
-    shared.towns.forEach(function (town) {
-      if (town.pillagable === undefined) {
-        town.pillagable = true;
-      }
-    });
-    shared.effects = [];
-  };
-
-  var myShipIndex = 0;
-
-  var onDeclareShipIndex = function (message) {
-    myShipIndex = message;
-  };
-
-  var init = function () {
-    if (!active) {
-      socket.on('shared:update', onSharedUpdate);
-      socket.on('shared:init', onSharedInit);
-      socket.on('shared:shipIndex', onDeclareShipIndex);
-      active = true;
-    }
-  };
+  });
 
   return {
-    init: init,
     get: function () {
-      init();
       return shared;
     },
     getMe: function () {
-      init();
-      return shared.players[myShipIndex];
-    },
-    tearDown: function () {
-      //socket.off('shared:update', onSharedUpdate);
-      //socket.off('shared:init', onSharedInit);
-      //shared = null;
+      return shared.players[socket.getId()];
     }
   };
 });

@@ -1,8 +1,10 @@
+/*
+ * Game State
+ */
 
 var util = require('util');
 
 var SocketronState = require('socketron').State;
-var GameStateData = require('./game-state-data');
 
 var GameState = module.exports = function (config) {
   SocketronState.apply(this, arguments);
@@ -11,27 +13,11 @@ var GameState = module.exports = function (config) {
   this.numberOfPlayers = 0;
 
   // TODO: name ? GameModel
-  this.model = new GameStateData();
-  this.privateState = new PrivateState();
+  this.model = {}; // new GameStateData();
+  //this.privateState = new PrivateState();
 
   this.on('controls', function (message, state, socket) {
     state.privateState.players[socket.id].controls = message;
-  });
-
-  this.on('lockon:ship', function (message, state, socket) {
-    state.privateState.players[socket.id].lockOn = message;
-    state.privateState.players[socket.id].lockOnTown = null;
-  });
-
-  this.on('pillage:town', function (message, state, socket) {
-    // you can only "lock on" if the village is pillagable
-    if (game.towns[message].pillagable()) {
-      state.privateState.players[socket.id].lockOnTown = message;
-      state.privateState.players[socket.id].lockOn = null;
-    }
-  });
-  this.on('buy:upgrade', function (message, state, socket) {
-    state.privateState.players[socket.id].upgrade = message;
   });
 };
 
@@ -44,39 +30,42 @@ GameState.prototype.add = function (socket) {
     return;
   }
 
-  if (this.numberOfPlayers === 0) {
-    this.leader = socket;
-    // TODO: start the model
-  }
-
   this.numberOfPlayers += 1;
 
   var ret = SocketronState.prototype.add.apply(this, arguments);
 
-  //this.parent().broadcast(this.repr());
+  socket.emit('change:route', '/game/' + this._name);
+  socket.emit('init:game:model', this.repr());
 
-  socket.emit('change:route', '/game/' + this.id);
+  this.broadcast('update:game', this.repr());
 
-  this.broadcast('shared:init', game);
+  // when the first player joins, start the game
+  if (this.numberOfPlayers === 1) {
+    this.start();
+  }
 
   return ret;
 };
 
 GameState.prototype.remove = function (socket) {
-  var ret = SocketronState.prototype.remove.apply(this, arguments);
 
   this.numberOfPlayers -= 1;
 
+  // when the last player leaves, stop the game
   if (this.numberOfPlayers <= 0) {
-    // TODO: stop the model
-    // remove this game ?
-    //this.parent().destroySubstate(this.name)
+    this.stop();
   }
 
-  //this.parent().broadcast(this.repr());
-
+  var ret = SocketronState.prototype.remove.apply(this, arguments);
+  this.broadcast('update:game', this.repr());
   return ret;
 };
+
+// return a representation to be sent to the client
+GameState.prototype.repr = function () {
+  return this.model;
+};
+
 
 GameState.prototype.start = function() {
 
@@ -95,7 +84,7 @@ GameState.prototype.start = function() {
     if (game.timer > 0) {
       setTimeout(play, 15);
     } else {
-      thisGameState.broadcast('change:route', '/game-over/' + thisGameState.id);
+      thisGameState.broadcast('change:route', '/game-over/' + thisGameState._name);
     }
   };
   play();

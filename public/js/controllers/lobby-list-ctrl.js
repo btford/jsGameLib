@@ -1,7 +1,7 @@
 /*global angular:false*/
 'use strict';
 
-angular.module('gameApp').controller('LobbyListCtrl', function ($scope, socket, remoteRouter) {
+angular.module('gameApp').controller('LobbyListCtrl', function ($scope, socket) {
 
   socket.emit('leave:lobby');
   socket.emit('get:lobbies');

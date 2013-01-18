@@ -2,11 +2,11 @@
 'use strict';
 
 angular.module('gameApp').controller('GameOverCtrl',
-    function ($scope, socket, $routeParams, shared) {
+    function ($scope, socket, sharedModel) {
 
   $scope.players = [];
 
-  shared.get().players.forEach(function (player, index) {
+  sharedModel.get().players.forEach(function (player, index) {
     $scope.players.push({
       name: 'Player ' + (index + 1),
       notoriety: player.notoriety + 500*(!!player.ship.treasure)

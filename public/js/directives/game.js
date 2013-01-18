@@ -1,4 +1,4 @@
-// todo: pooling
+/*global angular:false*/
 
 angular.module('gameApp').directive('game',
     function ($window, renderGame, fullscreen, gameController, shared, socket, $http, MapRenderer) {
@@ -71,11 +71,7 @@ angular.module('gameApp').directive('game',
 
       });
       
-      
-
       var render = function () {
-
-        // todo: clear api instead
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // TODO: move map canvas left and top
@@ -109,7 +105,6 @@ angular.module('gameApp').directive('game',
 
       scope.$on('$destroy', function () {
         render = function () {};
-        shared.tearDown();
       });
     }
   };

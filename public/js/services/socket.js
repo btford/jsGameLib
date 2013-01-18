@@ -24,6 +24,9 @@ angular.module('gameApp').factory('socket', function ($rootScope) {
     },
     getRaw: function () {
       return socket;
+    },
+    getId: function () {
+      return socket.socket.socketid;
     }
   };
 });

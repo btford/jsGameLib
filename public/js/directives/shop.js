@@ -1,3 +1,4 @@
+/*global angular:false*/
 
 angular.module('gameApp').directive('shop',
     function ($window, shared, $rootScope) {

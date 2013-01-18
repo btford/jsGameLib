@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('gameApp').controller('LobbyCtrl',
-    function ($scope, socket, shared, remoteRouter, $routeParams) {
+    function ($scope, socket, sharedModel, $routeParams) {
 
   socket.emit('join:lobby', {
     id: $routeParams.id
@@ -17,6 +17,4 @@ angular.module('gameApp').controller('LobbyCtrl',
   socket.on('update:lobby', function (message) {
     $scope.lobby = message;
   });
-
-  shared.init();
 });

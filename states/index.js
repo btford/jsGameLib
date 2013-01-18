@@ -1,9 +1,9 @@
 /*
- * Serve content over a socket
+ * Setup root Socketron State
  */
 
 var socketron = require('socketron');
-var LobbyState = require('../state/lobby-state');
+var LobbyState = require('./lobby-state');
 
 exports.init = function (io) {
 

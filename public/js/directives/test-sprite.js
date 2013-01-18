@@ -1,4 +1,4 @@
-// todo: pooling
+/*global angular:false*/
 
 angular.module('gameApp').directive('testSprite',
     function ($window) {

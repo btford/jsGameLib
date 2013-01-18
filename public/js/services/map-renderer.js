@@ -1,7 +1,7 @@
 /*global angular:false*/
 'use strict';
 
-angular.module('gameApp').factory('MapRenderer', function (imageLoader, shared) {
+angular.module('gameApp').factory('MapRenderer', function (imageLoader) {
 
   var MapRenderer = function (mapData) {
     this.mapData = mapData;
