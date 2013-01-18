@@ -4,19 +4,27 @@
 angular.module('gameApp').controller('AppCtrl',
     function ($scope, $location, fullscreen, dataLoader, imageLoader, remoteRouter) {
 
-  // TODO
-  // var originalTarget = $location.url();
+  /**
+   * When first loaded, take the player to a loading screen
+   * After loading, re-route the player to their original destination
+   */
+
+  var originalTarget = $location.url();
   $location.url('/loading');
 
   dataLoader.preLoad().ready(function () {
     imageLoader.preLoad().ready(function () {
-      // TODO
-      // $location.url(originalTarget);
-      $location.url('/');
+      $location.url(originalTarget);
     });
   });
+
+
+  /**
+   * Expose other fns to $scope
+   */
 
   $scope.toggleFullscreen = function () {
     fullscreen.toggle();
   };
+
 });

@@ -3,12 +3,34 @@
 
 angular.module('gameApp').controller('LobbyListCtrl', function ($scope, socket) {
 
-  socket.emit('leave:lobby');
-  socket.emit('get:lobbies');
+  /**
+   * Define event handlers
+   */
 
-  socket.on('update:lobbies', function (message) {
+  var onUpdateLobbies = function (message) {
     $scope.lobbies = message;
+  };
+
+
+  /**
+   * Bind handlers to events
+   */
+
+  socket.on('update:lobbies', onUpdateLobbies);
+
+
+  /**
+   * Unbind events when out of this scope
+   */
+
+  $scope.$on('$destroy', function () {
+    socket.off('update:lobbies', onUpdateLobbies);
   });
+
+
+  /**
+   * Expose other fns to $scope
+   */
 
   $scope.newLobby = function () {
     socket.emit('create:lobby', {
@@ -21,5 +43,14 @@ angular.module('gameApp').controller('LobbyListCtrl', function ($scope, socket) 
       id: id
     });
   };
+
+
+  /**
+   * Alert server that we've left our lobby
+   * and ask for the list of lobbies
+   */
+
+  socket.emit('leave:lobby');
+  socket.emit('get:lobbies');
 
 });

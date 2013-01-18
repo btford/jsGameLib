@@ -4,14 +4,22 @@
 angular.module('gameApp').factory('socket', function ($rootScope) {
   var socket = io.connect();
   return {
+    
     on: function (eventName, callback) {
-      socket.on(eventName, function () {
+      var augmentedCallback = function () {
         var args = arguments;
         $rootScope.$apply(function () {
           callback.apply(socket, args);
         });
-      });
+      };
+      callback._augmented = augmentedCallback;
+      socket.on(eventName, augmentedCallback);
     },
+
+    off: function (eventName, callback) {
+      return socket.removeListener(eventName, callback._augmented);
+    },
+
     emit: function (eventName, data, callback) {
       socket.emit(eventName, data, function () {
         var args = arguments;
@@ -22,9 +30,11 @@ angular.module('gameApp').factory('socket', function ($rootScope) {
         });
       });
     },
+
     getRaw: function () {
       return socket;
     },
+
     getId: function () {
       return socket.socket.socketid;
     }

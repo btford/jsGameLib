@@ -37,8 +37,15 @@ exports.init = function (io) {
         console.log(this.model.repr());
       },
       'join:lobby': function (message, globalLobbyState, socket) {
-        this.model.lobbies[message.id].add(socket);
-        this.broadcast('update:lobbies', this.model.repr());
+        try {
+          if (!this.model.lobbies[message.id].add(socket)) {
+            throw new Error('Cannot join lobby');
+          }
+          this.broadcast('update:lobbies', this.model.repr());
+        }
+        catch (e) {
+          this.broadcast('change:route', '/');
+        }
       },
       'get:lobbies': function (message, state, socket) {
         socket.emit('update:lobbies', this.model.repr());

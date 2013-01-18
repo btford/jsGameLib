@@ -37,7 +37,7 @@ LobbyState.prototype.add = function (socket) {
 
   // limit the number of sockets that can join
   if (this.numberOfPlayers >= this.maxPlayers) {
-    return;
+    return false;
   }
 
   if (this.numberOfPlayers === 0) {
@@ -46,28 +46,30 @@ LobbyState.prototype.add = function (socket) {
 
   this.numberOfPlayers += 1;
 
-  var ret = SocketronState.prototype.add.apply(this, arguments);
+  if (!SocketronState.prototype.add.apply(this, arguments)) {
+    return false;
+  }
 
   socket.emit('change:route', '/lobby/' + this._name);
   this.broadcast('update:lobby', this.repr());
 
-  return ret;
+  return true;
 };
 
 LobbyState.prototype.remove = function (socket) {
 
   this.numberOfPlayers -= 1;
-
-  if (this.numberOfPlayers <= 0) {
-    // remove this lobby ?
+  if (this.numberOfPlayers < 0) {
+    this.numberOfPlayers = 0;
   }
 
-  var ret = SocketronState.prototype.remove.apply(this, arguments);
+  SocketronState.prototype.remove.apply(this, arguments);
+  
   this._router.getSubstate('globalLobby').add(socket);
 
   this.broadcast('update:lobby', this.repr());
 
-  return ret;
+  return true;
 };
 
 // return a representation to be sent to the client

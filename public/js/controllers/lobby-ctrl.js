@@ -4,17 +4,48 @@
 angular.module('gameApp').controller('LobbyCtrl',
     function ($scope, socket, sharedModel, $routeParams) {
 
-  socket.emit('join:lobby', {
-    id: $routeParams.id
+  /**
+   * Define handlers
+   */
+
+  var onUpdateLobby = function (message) {
+    $scope.lobby = message;
+  };
+
+
+  /**
+   * Bind handlers to events
+   */
+
+  socket.on('update:lobby', onUpdateLobby);
+
+
+  /**
+   * Unbind events when out of this scope
+   */
+
+  $scope.$on('$destroy', function () {
+    socket.off('update:lobby', onUpdateLobby);
   });
-  
-  socket.emit('get:lobby');
-  
+
+
+  /**
+   * Expose other fns to $scope
+   */
+
   $scope.start = function () {
     socket.emit('start:game');
   };
 
-  socket.on('update:lobby', function (message) {
-    $scope.lobby = message;
+
+  /**
+   * Alert the server that we joined this lobby
+   * Ask for the info for this lobby
+   */
+
+  socket.emit('join:lobby', {
+    id: $routeParams.id
   });
+  socket.emit('get:lobby');
+
 });
